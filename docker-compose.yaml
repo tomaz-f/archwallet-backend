@@ -1,0 +1,42 @@
+version: "3.1"
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: sh -c "uvicorn main:app --host 0.0.0.0 --reload"
+    depends_on:
+      - postgresql
+    env_file:
+      - ./.env
+
+  postgresql:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/cache/postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+
+  postgresql-test:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/cache/postgres_data_test:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    env_file:
+      - ./.env
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgresql
